@@ -32,6 +32,6 @@ import (
 	"net"
 )
 
-func connCheck(conn net.Conn) error {
+func ConnCheck(conn net.Conn) error {
 	return nil
 }

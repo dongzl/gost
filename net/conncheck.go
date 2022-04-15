@@ -37,7 +37,7 @@ import (
 
 var errUnexpectedRead = errors.New("unexpected read from socket")
 
-func connCheck(conn net.Conn) error {
+func ConnCheck(conn net.Conn) error {
 	var sysErr error
 
 	sysConn, ok := conn.(syscall.Conn)
@@ -51,16 +51,16 @@ func connCheck(conn net.Conn) error {
 
 	err = rawConn.Read(func(fd uintptr) bool {
 		var buf [1]byte
-		n, err := syscall.Read(int(fd), buf[:])
+		n, readErr := syscall.Read(int(fd), buf[:])
 		switch {
-		case n == 0 && err == nil:
+		case n == 0 && readErr == nil:
 			sysErr = io.EOF
 		case n > 0:
 			sysErr = errUnexpectedRead
-		case err == syscall.EAGAIN || err == syscall.EWOULDBLOCK:
+		case readErr == syscall.EAGAIN || readErr == syscall.EWOULDBLOCK:
 			sysErr = nil
 		default:
-			sysErr = err
+			sysErr = readErr
 		}
 		return true
 	})
